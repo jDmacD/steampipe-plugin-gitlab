@@ -16,9 +16,9 @@ TEST_GROUP="${GITLAB_TEST_GROUP:-steampipe-gitlab-testing}"
 
 PASS=0; FAIL=0; SKIP=0
 
-ok()   { echo "  PASS  $1"; ((PASS++)); }
-fail() { echo "  FAIL  $1  ($2)"; ((FAIL++)); }
-skip() { echo "  SKIP  $1  ($2)"; ((SKIP++)); }
+ok()   { echo "  PASS  $1"; PASS=$(( PASS + 1 )); }
+fail() { echo "  FAIL  $1  ($2)"; FAIL=$(( FAIL + 1 )); }
+skip() { echo "  SKIP  $1  ($2)"; SKIP=$(( SKIP + 1 )); }
 
 # Run a steampipe query; succeed on exit 0, fail otherwise.
 # Empty result sets are fine — we are testing that the query doesn't error.
@@ -100,7 +100,7 @@ run gitlab_snippet    "SELECT * FROM gitlab_snippet LIMIT 1"
 # User tables
 # ---------------------------------------------------------------------------
 run gitlab_user       "SELECT * FROM gitlab_user WHERE username = '$USERNAME'"
-run gitlab_user_event "SELECT * FROM gitlab_user_event WHERE user_id = $USER_ID LIMIT 1"
+run gitlab_user_event "SELECT * FROM gitlab_user_event WHERE author_id = $USER_ID LIMIT 1"
 
 # ---------------------------------------------------------------------------
 # Project table (uses id= qualifier on SaaS)
