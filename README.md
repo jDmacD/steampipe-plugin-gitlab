@@ -49,10 +49,11 @@ from
 
 Prerequisites:
 
-* [Steampipe](https://steampipe.io/downloads)
-* [Golang](https://golang.org/doc/install)
+* [Nix](https://nixos.org/download/) with flakes enabled (manages all other dependencies)
 * GitLab (either hosted or self-hosted)
 * GitLab Token (either private or [personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html))
+
+> **NixOS note:** Steampipe downloads a `steampipe-postgres-fdw` binary at first run. On NixOS this fails because the binary expects a standard glibc dynamic linker. The fix is to enable `programs.nix-ld.enable = true` in your NixOS configuration and rebuild, which provides the compatibility layer needed for arbitrary Linux binaries.
 
 Clone:
 
@@ -61,25 +62,67 @@ git clone https://github.com/theapsgroup/steampipe-plugin-gitlab.git
 cd steampipe-plugin-gitlab
 ```
 
-Build, which automatically installs the new version to your `~/.steampipe/plugins` directory:
+Enter the dev shell (provides Go, Steampipe, gomod2nix, and helper scripts):
 
 ```sh
-make
+nix develop
+```
+
+Build and install the plugin into the project-local `.steampipe` directory:
+
+```sh
+nix run .#install
 ```
 
 Configure the plugin:
 
 ```sh
-cp config/* ~/.steampipe/config
-vi ~/.steampipe/config/gitlab.spc
+cp config/* .steampipe/config
+vi .steampipe/config/gitlab.spc
 ```
 
-Try it!
+Try it:
 
 ```shell
-steampipe query
+steampipe --install-dir $(pwd)/.steampipe query
 > .inspect gitlab
 ```
+
+> **Dependency changes:** After any `go get` or `go mod tidy`, run `gomod2nix` to keep `gomod2nix.toml` in sync with `go.mod`.
+
+### Testing
+
+Unit and structural tests live in `gitlab/` and require no network access:
+
+```sh
+go test ./...
+```
+
+Run a specific test:
+
+```sh
+go test -run TestParseAccessLevel -v ./gitlab/
+```
+
+The full Nix-sandboxed check (runs tests and lint in an isolated environment):
+
+```sh
+nix flake check --print-build-logs
+```
+
+The dev shell also provides a `query-project` helper that runs a sample Steampipe query against project ID 82145074 using the project-local `.steampipe` directory:
+
+```sh
+query-project
+```
+
+#### Test coverage
+
+| File | What is tested |
+|------|----------------|
+| `main_test.go` | `Plugin()` returns a non-nil plugin |
+| `gitlab/plugin_test.go` | Plugin name, all 39 tables registered, each table has columns and a hydrate config |
+| `gitlab/utils_test.go` | `sanitizeUrl`, `parseAccessLevel`, `accessLevelTransform`, `isoTimeTransform` |
 
 Further reading:
 

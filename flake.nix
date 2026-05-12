@@ -24,39 +24,31 @@
           inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
         };
         # Simple test check added to nix flake check
-        go-test = pkgs.stdenvNoCC.mkDerivation {
-          name = "go-test";
-          dontBuild = true;
+        go-test = gomod2nix.legacyPackages.${system}.buildGoApplication {
+          pname = "go-test";
+          version = "0.1";
+          pwd = ./.;
           src = ./.;
+          modules = ./gomod2nix.toml;
           doCheck = true;
-          nativeBuildInputs = with pkgs; [
-            go
-            writableTmpDirAsHomeHook
-          ];
           checkPhase = ''
             go test -v ./...
           '';
-          installPhase = ''
-            mkdir "$out"
-          '';
+          installPhase = "mkdir $out";
         };
         # Simple lint check added to nix flake check
-        go-lint = pkgs.stdenvNoCC.mkDerivation {
-          name = "go-lint";
-          dontBuild = true;
+        go-lint = gomod2nix.legacyPackages.${system}.buildGoApplication {
+          pname = "go-lint";
+          version = "0.1";
+          pwd = ./.;
           src = ./.;
+          modules = ./gomod2nix.toml;
+          nativeBuildInputs = [ pkgs.golangci-lint pkgs.writableTmpDirAsHomeHook ];
           doCheck = true;
-          nativeBuildInputs = with pkgs; [
-            golangci-lint
-            go
-            writableTmpDirAsHomeHook
-          ];
           checkPhase = ''
             golangci-lint run
           '';
-          installPhase = ''
-            mkdir "$out"
-          '';
+          installPhase = "mkdir $out";
         };
       in
       {
