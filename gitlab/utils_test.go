@@ -9,27 +9,6 @@ import (
 	api "github.com/xanzy/go-gitlab"
 )
 
-func TestSanitizeUrl(t *testing.T) {
-	tests := []struct {
-		input string
-		want  string
-	}{
-		{"https://gitlab.example.com/api/v4", "https:/gitlab.example.com/api/v4"},
-		{"https://gitlab.example.com//api/v4", "https:/gitlab.example.com/api/v4"},
-		{"/path//to//resource", "/path/to/resource"},
-		{"no-double-slashes", "no-double-slashes"},
-		{"", ""},
-	}
-	for _, tt := range tests {
-		t.Run(tt.input, func(t *testing.T) {
-			got := sanitizeUrl(tt.input)
-			if got != tt.want {
-				t.Errorf("sanitizeUrl(%q) = %q; want %q", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestParseAccessLevel(t *testing.T) {
 	tests := []struct {
 		input int

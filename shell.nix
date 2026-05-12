@@ -23,6 +23,9 @@ pkgs.mkShell {
     gomod2nix
     pkgs.steampipe
     pkgs.commitizen
+    (pkgs.writeShellScriptBin "run-tests" ''
+      cd "$(git rev-parse --show-toplevel)" && go test -v ./...
+    '')
     (pkgs.writeShellScriptBin "query-project" ''
       steampipe --install-dir "$(git rev-parse --show-toplevel)/.steampipe" query "select * FROM gitlab_project WHERE id = 82145074;" --output json
     '')
