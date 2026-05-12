@@ -23,6 +23,7 @@ pkgs.mkShell {
     gomod2nix
     pkgs.steampipe
     pkgs.commitizen
+    pkgs.glab
     (pkgs.writeShellScriptBin "run-tests" ''
       cd "$(git rev-parse --show-toplevel)" && go test -v ./...
     '')
