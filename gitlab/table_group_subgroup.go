@@ -3,9 +3,7 @@ package gitlab
 import (
 	"context"
 	"fmt"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 	api "github.com/xanzy/go-gitlab"
 )
 
@@ -65,14 +63,3 @@ func listGroupSubgroups(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	return nil, nil
 }
 
-// Column Function
-func groupSubgroupColumns() []*plugin.Column {
-	cols := groupColumns()
-	gic := plugin.Column{
-		Name:        "group_id",
-		Type:        proto.ColumnType_INT,
-		Description: "Group ID",
-		Transform:   transform.FromQual("group_id"),
-	}
-	return append(cols, &gic)
-}
