@@ -45,3 +45,4 @@ steampipe-plugin-gitlab.plugin
 .steampipe/plugins/
 .steampipe/internal/
 .steampipe/logs/
+result
