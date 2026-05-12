@@ -1,9 +1,11 @@
 connection "gitlab" {
-  plugin = "theapsgroup/gitlab"
+  plugin = "local/gitlab"
 
-  # The baseUrl of your GitLab Instance API (ignore if set in GITLAB_ADDR env var)
-  # baseurl = "https://gitlab.company.com/api/v4"
+  # Base URL of your GitLab instance API.
+  # Omit for gitlab.com. Can also be set via the GITLAB_ADDR env var.
+  # baseurl = "https://gitlab.yourcompany.com/api/v4"
 
-  # Access Token for which to use for the API (ignore if set in GITLAB_TOKEN env var)
-  # token = "x11x1xXxXx1xX1Xx11"
+  # Personal or project access token.
+  # Can also be set via the GITLAB_TOKEN env var.
+  # token = "glpat-xxxxxxxxxxxxxxxxxxxx"
 }

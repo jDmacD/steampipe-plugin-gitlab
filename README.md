@@ -116,13 +116,52 @@ The dev shell also provides a `query-project` helper that runs a sample Steampip
 query-project
 ```
 
+### Integration testing
+
+The dev shell provides two commands for smoke-testing all 39 tables against a real GitLab instance.
+
+#### Setup
+
+Create a group called `steampipe-gitlab-testing` on each instance you want to test against, with at least one project containing a commit. Authenticate `glab` for each instance:
+
+```sh
+glab auth login                                       # gitlab.com
+glab auth login --hostname gitlab.yourcompany.com     # self-hosted
+```
+
+#### Running the tests
+
+The plugin reads `GITLAB_ADDR` and `GITLAB_TOKEN` from the environment, falling back to `.steampipe/config/gitlab.spc`. Use these to point `test-tables` at any instance without touching the config file:
+
+```sh
+nix run .#install   # build and install the plugin first
+
+# gitlab.com (uses token from .steampipe/config/gitlab.spc or GITLAB_TOKEN)
+test-tables
+
+# self-hosted instance
+GITLAB_ADDR=https://gitlab.yourcompany.com/api/v4 GITLAB_TOKEN=glpat-xxx test-tables
+```
+
+Each table gets a `SELECT ... LIMIT 1` with appropriate qualifiers. The script prints `PASS`, `FAIL`, or `SKIP` per table and exits non-zero if anything fails. Tables are automatically skipped when:
+
+- the required resource doesn't exist yet (e.g. no pipelines, no merge requests)
+- the table requires admin access (on gitlab.com)
+- the table requires a GitLab EE licence (on gitlab.com free tier)
+
+Override the test group path if it differs on your self-hosted instance:
+
+```sh
+GITLAB_TEST_GROUP=my-namespace/steampipe-gitlab-testing test-tables
+```
+
 #### Test coverage
 
 | File | What is tested |
 |------|----------------|
 | `main_test.go` | `Plugin()` returns a non-nil plugin |
 | `gitlab/plugin_test.go` | Plugin name, all 39 tables registered, each table has columns and a hydrate config |
-| `gitlab/utils_test.go` | `sanitizeUrl`, `parseAccessLevel`, `accessLevelTransform`, `isoTimeTransform` |
+| `gitlab/utils_test.go` | `parseAccessLevel`, `accessLevelTransform`, `isoTimeTransform` |
 
 Further reading:
 
@@ -140,4 +179,4 @@ All contributions are subject to the [Apache 2.0 open source license](https://gi
 
 ## Credits
 
-GitLab API Wrapper [xanzy/go-gitlab](https://github.com/xanzy/go-gitlab) (licensed separately using this [Apache License](https://github.com/xanzy/go-gitlab/blob/master/LICENSE))
+GitLab API client [gitlab-org/api/client-go](https://gitlab.com/gitlab-org/api/client-go) (licensed separately under the [Apache 2.0 License](https://gitlab.com/gitlab-org/api/client-go/-/blob/main/LICENSE))
