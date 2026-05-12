@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -23,13 +22,11 @@ func connect(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
 	token := os.Getenv("GITLAB_TOKEN")
 
 	gitlabConfig := GetConfig(d.Connection)
-	if &gitlabConfig != nil {
-		if gitlabConfig.BaseUrl != nil {
-			baseUrl = *gitlabConfig.BaseUrl
-		}
-		if gitlabConfig.Token != nil {
-			token = *gitlabConfig.Token
-		}
+	if gitlabConfig.BaseUrl != nil {
+		baseUrl = *gitlabConfig.BaseUrl
+	}
+	if gitlabConfig.Token != nil {
+		token = *gitlabConfig.Token
 	}
 
 	if baseUrl == "" {
@@ -48,15 +45,11 @@ func connect(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
 		return nil, err
 	}
 
-	// Save to cache
-	d.ConnectionCache.Set(ctx, cacheKey, client)
+	if err := d.ConnectionCache.Set(ctx, cacheKey, client); err != nil {
+		plugin.Logger(ctx).Warn("connect", "failed to cache client", err)
+	}
 
 	return client, nil
-}
-
-// sanitizeUrl is a util func for stripping accidental double slashes in urls
-func sanitizeUrl(url string) string {
-	return strings.ReplaceAll(url, "//", "/")
 }
 
 // isoTimeTransform is a transformation func for *gitlab.ISOTime to *time.Time
@@ -119,11 +112,5 @@ func parseAccessLevel(input int) string {
 // isPublicGitLab is a util function to determine if the API is the public GitLab
 func isPublicGitLab(d *plugin.QueryData) bool {
 	cfg := GetConfig(d.Connection)
-	if &cfg != nil {
-		if cfg.BaseUrl == nil || *cfg.BaseUrl == publicGitLabBaseUrl {
-			return true
-		}
-	}
-
-	return false
+	return cfg.BaseUrl == nil || *cfg.BaseUrl == publicGitLabBaseUrl
 }

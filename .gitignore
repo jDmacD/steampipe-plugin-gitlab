@@ -41,3 +41,9 @@ steampipe-plugin-gitlab.plugin
 
 # Vim
 .*.swp
+.steampipe/db/
+.steampipe/plugins/
+.steampipe/internal/
+.steampipe/logs/
+result
+.steampipe/config/gitlab.spc
