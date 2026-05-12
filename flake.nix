@@ -62,7 +62,7 @@
             set -euo pipefail
             PLUGIN_DIR=".steampipe/plugins/local/gitlab"
             mkdir -p "$PLUGIN_DIR"
-            cp "${plugin}/bin/steampipe-plugin-gitlab.plugin" "$PLUGIN_DIR/gitlab.plugin"
+            install -m755 "${plugin}/bin/steampipe-plugin-gitlab.plugin" "$PLUGIN_DIR/gitlab.plugin"
           '');
         };
         devShells.default = callPackage ./shell.nix {
