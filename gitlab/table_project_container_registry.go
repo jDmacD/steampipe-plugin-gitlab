@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableProjectContainerRegistry() *plugin.Table {
@@ -36,7 +36,7 @@ func listProjectContainerRegistries(ctx context.Context, d *plugin.QueryData, h 
 	}
 
 	projectId := int(d.EqualsQuals["project_id"].GetInt64Value())
-	opt := &api.ListRegistryRepositoriesOptions{
+	opt := &api.ListProjectRegistryRepositoriesOptions{
 		ListOptions: api.ListOptions{
 			Page:    1,
 			PerPage: 50,

@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableIssue() *plugin.Table {
@@ -161,7 +161,7 @@ func addOptionalProjectIssueQualifiers(ctx context.Context, opts *api.ListProjec
 	}
 
 	if q["author_id"] != nil {
-		authorId := int(q["author_id"].GetInt64Value())
+		authorId := q["author_id"].GetInt64Value()
 		opts.AuthorID = &authorId
 		plugin.Logger(ctx).Debug("listProjectIssues", "filter[author_id]", authorId)
 	}
@@ -189,7 +189,7 @@ func addOptionalIssueQualifiers(ctx context.Context, opts *api.ListIssuesOptions
 	}
 
 	if q["author_id"] != nil {
-		authorId := int(q["author_id"].GetInt64Value())
+		authorId := q["author_id"].GetInt64Value()
 		opts.AuthorID = &authorId
 		plugin.Logger(ctx).Debug("listAllIssues", "filter[author_id]", authorId)
 	}

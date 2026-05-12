@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableInstanceVariable() *plugin.Table {
@@ -35,8 +35,7 @@ func listInstanceVars(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	}
 
 	opt := &api.ListInstanceVariablesOptions{
-		Page:    1,
-		PerPage: 50,
+		ListOptions: api.ListOptions{Page: 1, PerPage: 50},
 	}
 
 	for {

@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 	"strings"
 )
 
@@ -75,7 +75,7 @@ func listUsers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 func getUser(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	plugin.Logger(ctx).Debug("getUser", "started")
-	userId := int(d.EqualsQuals["id"].GetInt64Value())
+	userId := d.EqualsQuals["id"].GetInt64Value()
 	userName := d.EqualsQuals["username"].GetStringValue()
 
 	conn, err := connect(ctx, d)

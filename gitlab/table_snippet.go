@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableSnippet() *plugin.Table {
@@ -29,8 +29,7 @@ func listSnippets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 	}
 
 	opt := &api.ListSnippetsOptions{
-		Page:    1,
-		PerPage: 50,
+		ListOptions: api.ListOptions{Page: 1, PerPage: 50},
 	}
 
 	for {

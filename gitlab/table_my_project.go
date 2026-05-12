@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableMyProject() *plugin.Table {

@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableMergeRequest() *plugin.Table {
@@ -40,7 +40,7 @@ func getMergeRequest(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	}
 
 	q := d.EqualsQuals
-	iid := int(q["iid"].GetInt64Value())
+	iid := int64(q["iid"].GetInt64Value())
 	projectId := int(q["project_id"].GetInt64Value())
 	plugin.Logger(ctx).Debug("getMergeRequest", "projectId", projectId, "iid", iid)
 
@@ -99,7 +99,7 @@ func listProjectMergeRequests(ctx context.Context, d *plugin.QueryData, h *plugi
 	}
 
 	if q["author_id"] != nil {
-		authorId := int(q["author_id"].GetInt64Value())
+		authorId := q["author_id"].GetInt64Value()
 		opt.AuthorID = &authorId
 		plugin.Logger(ctx).Debug("listProjectMergeRequests", "filter[author_id]", authorId)
 	}
@@ -164,7 +164,7 @@ func listAllMergeRequests(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	}
 
 	if q["author_id"] != nil {
-		authorId := int(q["author_id"].GetInt64Value())
+		authorId := q["author_id"].GetInt64Value()
 		opt.AuthorID = &authorId
 		plugin.Logger(ctx).Debug("listAllMergeRequests", "filter[author_id]", authorId)
 	}
