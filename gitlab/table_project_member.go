@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 	"time"
 )
 
@@ -61,7 +61,7 @@ func listProjectMembers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 
 		for _, member := range members {
 			d.StreamListItem(ctx, &ProjectMember{
-				ID:          member.ID,
+				ID:          int(member.ID),
 				Username:    member.Username,
 				Name:        member.Name,
 				State:       member.State,

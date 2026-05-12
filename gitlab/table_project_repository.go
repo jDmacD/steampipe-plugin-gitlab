@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableProjectRepository() *plugin.Table {
@@ -46,11 +46,11 @@ func listRepositoryTree(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 			Page:    1,
 			PerPage: 50,
 		},
-		Recursive: api.Bool(true),
+		Recursive: api.Ptr(true),
 	}
 
 	if d.EqualsQualString("ref") != "" {
-		ref := api.String(d.EqualsQualString("ref"))
+		ref := api.Ptr(d.EqualsQualString("ref"))
 		opt.Ref = ref
 		plugin.Logger(ctx).Debug("listRepositoryTree", "filter[ref]", *ref)
 	}

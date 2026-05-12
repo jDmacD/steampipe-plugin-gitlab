@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableProjectDeployment() *plugin.Table {
@@ -85,7 +85,7 @@ func getProjectDeployment(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	}
 
 	projectId := int(d.EqualsQuals["project_id"].GetInt64Value())
-	id := int(d.EqualsQuals["id"].GetInt64Value())
+	id := d.EqualsQuals["id"].GetInt64Value()
 	plugin.Logger(ctx).Debug("getProjectDeployment", "projectId", projectId, "id", id)
 
 	dep, _, err := conn.Deployments.GetProjectDeployment(projectId, id)

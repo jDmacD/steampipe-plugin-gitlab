@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 	"strings"
 )
 
@@ -56,7 +56,7 @@ func listCommits(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 		}
 
 		for _, commit := range commits {
-			commit.ProjectID = projectId
+			commit.ProjectID = int64(projectId)
 			commit.Message = strings.TrimRight(commit.Message, "\n") // remove trailing newline from commit message.
 			d.StreamListItem(ctx, commit)
 			// Context can be cancelled due to manual cancellation or the limit has been hit
@@ -89,7 +89,7 @@ func getCommit(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	id := d.EqualsQuals["id"].GetStringValue()
 	plugin.Logger(ctx).Debug("getCommit", "projectId", projectId, "commitId", id)
 
-	commit, _, err := conn.Commits.GetCommit(projectId, id)
+	commit, _, err := conn.Commits.GetCommit(projectId, id, nil)
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
 			plugin.Logger(ctx).Warn("getCommit", "projectId", projectId, "commitId", id, "no project was found, returning empty result set")
@@ -99,7 +99,7 @@ func getCommit(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		return nil, fmt.Errorf("unable to obtain commits for project_id %d\n%v", projectId, err)
 	}
 
-	commit.ProjectID = projectId
+	commit.ProjectID = int64(projectId)
 	commit.Message = strings.TrimRight(commit.Message, "\n") // remove trailing newline from commit message.
 
 	plugin.Logger(ctx).Debug("getCommit", "completed successfully")

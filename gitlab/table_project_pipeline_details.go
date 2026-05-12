@@ -31,7 +31,7 @@ func listProjectPipelineDetails(ctx context.Context, d *plugin.QueryData, h *plu
 	}
 
 	projectId := int(d.EqualsQuals["project_id"].GetInt64Value())
-	pipelineId := int(d.EqualsQuals["id"].GetInt64Value())
+	pipelineId := d.EqualsQuals["id"].GetInt64Value()
 
 	plugin.Logger(ctx).Debug("listProjectPipelineDetails", "projectId", projectId, "pipelineId", pipelineId)
 	pipeline, _, err := conn.Pipelines.GetPipeline(projectId, pipelineId)

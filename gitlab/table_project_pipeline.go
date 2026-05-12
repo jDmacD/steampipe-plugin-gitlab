@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 	"strings"
 	"time"
 )
@@ -79,21 +79,21 @@ func listProjectPipelines(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 
 		switch strings.ToLower(s) {
 		case "pending":
-			opt.Status = api.BuildState(api.Pending)
+			opt.Status = api.Ptr(api.Pending)
 		case "created":
-			opt.Status = api.BuildState(api.Created)
+			opt.Status = api.Ptr(api.Created)
 		case "running":
-			opt.Status = api.BuildState(api.Canceled)
+			opt.Status = api.Ptr(api.Running)
 		case "success":
-			opt.Status = api.BuildState(api.Success)
+			opt.Status = api.Ptr(api.Success)
 		case "failed":
-			opt.Status = api.BuildState(api.Failed)
+			opt.Status = api.Ptr(api.Failed)
 		case "canceled":
-			opt.Status = api.BuildState(api.Canceled)
+			opt.Status = api.Ptr(api.Canceled)
 		case "skipped":
-			opt.Status = api.BuildState(api.Skipped)
+			opt.Status = api.Ptr(api.Skipped)
 		case "manual":
-			opt.Status = api.BuildState(api.Manual)
+			opt.Status = api.Ptr(api.Manual)
 		default:
 			return nil, nil
 		}

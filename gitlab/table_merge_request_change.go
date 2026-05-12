@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "github.com/xanzy/go-gitlab"
+	api "gitlab.com/gitlab-org/api/client-go"
 )
 
 func tableMergeRequestChange() *plugin.Table {
@@ -31,18 +31,33 @@ func listChanges(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	}
 
 	q := d.EqualsQuals
-	iid := int(q["iid"].GetInt64Value())
+	iid := q["iid"].GetInt64Value()
 	projectId := int(q["project_id"].GetInt64Value())
 
-	plugin.Logger(ctx).Debug("listChanges", "projectId", projectId, "iid", iid)
-	mergeRequest, _, err := conn.MergeRequests.GetMergeRequest(projectId, iid, &api.GetMergeRequestsOptions{})
-	if err != nil {
-		plugin.Logger(ctx).Error("listChanges", "projectId", projectId, "iid", iid, "error", err)
-		return nil, fmt.Errorf("unable to obtain changes for merge request %d for project_id %d\n%v", iid, projectId, err)
+	opt := &api.ListMergeRequestDiffsOptions{
+		ListOptions: api.ListOptions{Page: 1, PerPage: 50},
 	}
 
-	for _, change := range mergeRequest.Changes {
-		d.StreamListItem(ctx, change)
+	plugin.Logger(ctx).Debug("listChanges", "projectId", projectId, "iid", iid)
+	for {
+		diffs, resp, err := conn.MergeRequests.ListMergeRequestDiffs(projectId, iid, opt)
+		if err != nil {
+			plugin.Logger(ctx).Error("listChanges", "projectId", projectId, "iid", iid, "error", err)
+			return nil, fmt.Errorf("unable to obtain changes for merge request %d for project_id %d\n%v", iid, projectId, err)
+		}
+
+		for _, diff := range diffs {
+			d.StreamListItem(ctx, diff)
+			if d.RowsRemaining(ctx) == 0 {
+				plugin.Logger(ctx).Debug("listChanges", "completed successfully")
+				return nil, nil
+			}
+		}
+
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
 	}
 
 	plugin.Logger(ctx).Debug("listChanges", "completed successfully")
