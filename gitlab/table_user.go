@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "gitlab.com/gitlab-org/api/client-go"
+	api "gitlab.com/gitlab-org/api/client-go/v2"
 	"strings"
 )
 
@@ -86,10 +86,10 @@ func getUser(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (i
 
 	if userId != 0 {
 		var b = false
-		opt := api.GetUsersOptions{WithCustomAttributes: &b}
+		opt := api.GetUserOptions{WithCustomAttributes: &b}
 		plugin.Logger(ctx).Debug("getUser", "filter[id]", userId)
 
-		user, _, err := conn.Users.GetUser(userId, opt)
+		user, _, err := conn.Users.GetUser(userId, &opt)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
 				plugin.Logger(ctx).Warn("getUser", "id", userId, "no user was found, returning empty result set")
