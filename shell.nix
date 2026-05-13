@@ -46,4 +46,11 @@ pkgs.mkShell {
       goreleaser release --clean "$@"
     '')
   ];
+  shellHook =
+  ''
+    export GITLAB_DOMAIN="$(glab config get host)"
+    export GITLAB_ADDR="https://$GITLAB_DOMAIN/api/v4"
+    export GITLAB_TOKEN="$(glab config --host $GITLAB_DOMAIN get token)"
+    echo "Connected to $GITLAB_ADDR"
+  '';
 }
