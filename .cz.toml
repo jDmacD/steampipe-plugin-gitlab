@@ -1,4 +1,6 @@
 [tool.commitizen]
-version_provider = "scm"
+version_provider = "commitizen"
+version_files = ["VERSION"]
 tag_format = "v$version"
+version = "0.0.1"
 update_changelog_on_bump = false
