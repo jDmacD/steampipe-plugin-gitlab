@@ -49,6 +49,7 @@ func TestPluginTableMap(t *testing.T) {
 		"gitlab_project_protected_branch",
 		"gitlab_project_repository",
 		"gitlab_project_repository_file",
+		"gitlab_project_tag",
 		"gitlab_project_variable",
 		"gitlab_setting",
 		"gitlab_snippet",

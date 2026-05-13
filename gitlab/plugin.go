@@ -54,6 +54,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"gitlab_project_protected_branch":   tableProjectProtectedBranch(),
 			"gitlab_project_repository":         tableProjectRepository(),
 			"gitlab_project_repository_file":    tableProjectRepositoryFile(),
+			"gitlab_project_tag":                tableProjectTag(),
 			"gitlab_project_variable":           tableProjectVariable(),
 			"gitlab_setting":                    tableSetting(),
 			"gitlab_snippet":                    tableSnippet(),

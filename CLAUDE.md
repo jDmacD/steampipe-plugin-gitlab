@@ -25,6 +25,15 @@ nix develop
 
 When using the Nix dev shell, `gomod2nix.toml` must be kept in sync with `go.mod`. Run `gomod2nix` after any `go get` / `go mod tidy`.
 
+## Running an sql query
+```bash
+steampipe --install-dir "$(git rev-parse --show-toplevel)/.steampipe" query "select name, tag_list from gitlab_group_project where group_id = 1292;" --output json
+```
+```bash
+nix develop --command steampipe --install-dir "$(git rev-parse --show-toplevel)/.steampipe" query "select * FROM gitlab_project WHERE id = 82145074;" --output json
+```
+Add a `LIMIT` unless explicitly told not to
+
 ## Publishing to GHCR
 
 The `publish` command (available in `nix develop`) pushes the plugin to `ghcr.io/jdmacd/steampipe-plugin-gitlab` as an OCI artifact in the format Steampipe expects.

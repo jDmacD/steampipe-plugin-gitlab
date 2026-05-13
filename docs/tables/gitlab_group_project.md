@@ -25,6 +25,21 @@ where
   group_id = 1234;
 ```
 
+### List repository tags for all projects in a group
+
+Use `gitlab_project_tag` to query repository tags per project. The `tag_list` column on this table reflects project topics (GitLab settings), not git tags.
+
+```sql
+select
+  p.name as project_name,
+  t.name as tag
+from
+  gitlab_group_project p
+  join gitlab_project_tag t on t.project_id = p.id
+where
+  p.group_id = 1234;
+```
+
 ### List all projects for a specific group only
 
 ```sql

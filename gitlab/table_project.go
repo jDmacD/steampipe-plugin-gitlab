@@ -253,7 +253,8 @@ func projectColumns() []*plugin.Column {
 		{
 			Name:        "tag_list",
 			Type:        proto.ColumnType_JSON,
-			Description: "An array of tags associated to the project.",
+			Description: "An array of topics associated to the project (deprecated alias for topics).",
+			Transform:   transform.FromField("Topics"),
 		},
 		{
 			Name:        "topics",
