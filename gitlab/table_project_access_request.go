@@ -6,7 +6,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
-	api "gitlab.com/gitlab-org/api/client-go"
+	api "gitlab.com/gitlab-org/api/client-go/v2"
 )
 
 func tableProjectAccessRequest() *plugin.Table {
