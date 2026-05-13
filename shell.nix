@@ -27,6 +27,7 @@ pkgs.mkShell {
     pkgs.jq
     pkgs.goreleaser
     pkgs.oras
+    pkgs.gh
     (pkgs.writeShellScriptBin "run-tests" ''
       cd "$(git rev-parse --show-toplevel)" && go test -v ./...
     '')
