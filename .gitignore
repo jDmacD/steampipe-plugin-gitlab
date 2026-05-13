@@ -47,7 +47,6 @@ steampipe-plugin-gitlab.plugin
 .steampipe/logs/
 result
 .steampipe/config/gitlab.spc
-CLAUDE.md
 
 # GoReleaser
 dist/
