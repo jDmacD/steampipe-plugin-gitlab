@@ -25,6 +25,7 @@ pkgs.mkShell {
     pkgs.commitizen
     pkgs.glab
     pkgs.jq
+    pkgs.goreleaser
     (pkgs.writeShellScriptBin "run-tests" ''
       cd "$(git rev-parse --show-toplevel)" && go test -v ./...
     '')
@@ -32,5 +33,9 @@ pkgs.mkShell {
       steampipe --install-dir "$(git rev-parse --show-toplevel)/.steampipe" query "select * FROM gitlab_project WHERE id = 82145074;" --output json
     '')
     (pkgs.writeShellScriptBin "test-tables" (builtins.readFile ./scripts/test-tables.sh))
+    (pkgs.writeShellScriptBin "release" ''
+      export GITHUB_TOKEN=$(gh auth token)
+      goreleaser release --clean "$@"
+    '')
   ];
 }
