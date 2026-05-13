@@ -34,6 +34,12 @@ pkgs.mkShell {
     '')
     (pkgs.writeShellScriptBin "test-tables" (builtins.readFile ./scripts/test-tables.sh))
     (pkgs.writeShellScriptBin "release" ''
+      set -euo pipefail
+      if [[ "''${1:-}" == "--bump" ]]; then
+        shift
+        cz bump --yes
+        git push origin "$(git describe --tags --abbrev=0)"
+      fi
       export GITHUB_TOKEN=$(gh auth token)
       goreleaser release --clean "$@"
     '')
