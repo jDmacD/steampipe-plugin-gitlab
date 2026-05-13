@@ -21,6 +21,8 @@ builds:
 
     id: "steampipe"
     binary: "{{ .ProjectName }}.plugin"
+    ldflags:
+      - -s -w
 
 archives:
   - formats:
