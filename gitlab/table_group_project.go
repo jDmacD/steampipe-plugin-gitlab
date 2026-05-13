@@ -68,9 +68,48 @@ func listGroupProjects(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	return nil, nil
 }
 
+// getGroupProjectStats fetches project statistics via a separate GetProject call
+// because ListGroupProjects does not support the statistics parameter.
+func getGroupProjectStats(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	conn, err := connect(ctx, d)
+	if err != nil {
+		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+	}
+
+	projectId := h.Item.(*api.Project).ID
+	stats := true
+	project, _, err := conn.Projects.GetProject(projectId, &api.GetProjectOptions{Statistics: &stats})
+	if err != nil {
+		return nil, fmt.Errorf("unable to obtain statistics for project %d: %v", projectId, err)
+	}
+
+	return project.Statistics, nil
+}
+
 // Column Function
 func groupProjectColumns() []*plugin.Column {
 	cols := projectColumns()
+
+	statsFields := map[string]string{
+		"commit_count":       "CommitCount",
+		"storage_size":       "StorageSize",
+		"repository_size":    "RepositorySize",
+		"lfs_objects_size":   "LFSObjectsSize",
+		"job_artifacts_size": "JobArtifactsSize",
+	}
+
+	for i, col := range cols {
+		if field, ok := statsFields[col.Name]; ok {
+			cols[i] = &plugin.Column{
+				Name:        col.Name,
+				Type:        col.Type,
+				Description: col.Description,
+				Hydrate:     getGroupProjectStats,
+				Transform:   transform.FromField(field),
+			}
+		}
+	}
+
 	gic := plugin.Column{
 		Name:        "group_id",
 		Type:        proto.ColumnType_INT,
