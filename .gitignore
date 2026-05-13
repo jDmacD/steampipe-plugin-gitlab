@@ -48,3 +48,6 @@ steampipe-plugin-gitlab.plugin
 result
 .steampipe/config/gitlab.spc
 CLAUDE.md
+
+# GoReleaser
+dist/
