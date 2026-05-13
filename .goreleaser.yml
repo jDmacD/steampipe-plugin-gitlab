@@ -21,7 +21,8 @@ builds:
     binary: "{{ .ProjectName }}.plugin"
 
 archives:
-  - format: gz
+  - formats:
+      - gz
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     files:
       - none*
@@ -30,7 +31,6 @@ checksum:
   algorithm: sha256
 changelog:
   sort: asc
-  use: conventional
   groups:
     - title: Features
       regexp: "^feat"
