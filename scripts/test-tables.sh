@@ -77,11 +77,13 @@ DEFAULT_BRANCH=$(api "projects/$PROJECT_ID" | jq -r '.default_branch // "main"')
 echo "  user     : $USERNAME (id=$USER_ID)"
 echo "  group    : $TEST_GROUP (id=$GROUP_ID)"
 echo "  project  : $PROJECT_PATH (id=$PROJECT_ID, branch=$DEFAULT_BRANCH)"
+echo "  tag      : ${TAG_NAME:-(none)}"
 
 # Optional fixtures — resolved now, used to skip tests gracefully
 COMMIT_SHA=$(api "projects/$PROJECT_ID/repository/commits?per_page=1" | jq -r '.[0].id // empty')
 PIPELINE_ID=$(api "projects/$PROJECT_ID/pipelines?per_page=1" | jq -r '.[0].id // empty')
 MR_IID=$(api "projects/$PROJECT_ID/merge_requests?per_page=1" | jq -r '.[0].iid // empty')
+TAG_NAME=$(api "projects/$PROJECT_ID/repository/tags?per_page=1" | jq -r '.[0].name // empty')
 
 echo ""
 echo "Running table tests..."
@@ -134,6 +136,16 @@ run gitlab_project_deployment      "SELECT * FROM gitlab_project_deployment WHER
 run gitlab_project_container_registry "SELECT * FROM gitlab_project_container_registry WHERE project_id = $PROJECT_ID LIMIT 1"
 run gitlab_project_pages_domain    "SELECT * FROM gitlab_project_pages_domain WHERE project_id = $PROJECT_ID LIMIT 1"
 run gitlab_project_access_request  "SELECT * FROM gitlab_project_access_request WHERE project_id = $PROJECT_ID LIMIT 1"
+
+# ---------------------------------------------------------------------------
+# Tables that need a repository tag to exist
+# ---------------------------------------------------------------------------
+if [[ -n "$TAG_NAME" ]]; then
+    run gitlab_project_tag \
+        "SELECT * FROM gitlab_project_tag WHERE project_id = $PROJECT_ID LIMIT 1"
+else
+    skip gitlab_project_tag "no tags in test project"
+fi
 
 # ---------------------------------------------------------------------------
 # Tables that need a commit to exist

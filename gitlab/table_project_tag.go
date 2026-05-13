@@ -30,7 +30,11 @@ func listProjectTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	}
 
 	projectId := int(d.EqualsQuals["project_id"].GetInt64Value())
+	orderBy := "version"
+	sort := "desc"
 	opt := &api.ListTagsOptions{
+		OrderBy: &orderBy,
+		Sort:    &sort,
 		ListOptions: api.ListOptions{
 			Page:    1,
 			PerPage: 50,

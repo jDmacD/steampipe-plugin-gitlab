@@ -6,6 +6,40 @@ However, **you must specify** a `project_id` in the where or join clause.
 
 ## Examples
 
+### Get the latest tag for a project
+
+Tags are returned newest-first (semantic version order), so `LIMIT 1` gives the latest.
+
+```sql
+select
+  name,
+  target
+from
+  gitlab_project_tag
+where
+  project_id = 123
+limit 1;
+```
+
+### Get the latest tag for every project in a group
+
+```sql
+select
+  p.name as project,
+  t.name as latest_tag,
+  t.target
+from
+  gitlab_group_project p
+  join lateral (
+    select name, target
+    from gitlab_project_tag
+    where project_id = p.id
+    limit 1
+  ) t on true
+where
+  p.group_id = 1234;
+```
+
 ### List all tags for a project
 
 ```sql
