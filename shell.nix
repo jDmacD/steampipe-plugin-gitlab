@@ -43,6 +43,7 @@ pkgs.mkShell {
         cz bump --yes
         git push origin "$(git describe --tags --abbrev=0)"
       fi
+      export GITLAB_TOKEN=
       export GITHUB_TOKEN=$(gh auth token)
       goreleaser release --clean "$@"
     '')
