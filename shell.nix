@@ -26,6 +26,7 @@ pkgs.mkShell {
     pkgs.glab
     pkgs.jq
     pkgs.goreleaser
+    pkgs.oras
     (pkgs.writeShellScriptBin "run-tests" ''
       cd "$(git rev-parse --show-toplevel)" && go test -v ./...
     '')
@@ -33,6 +34,7 @@ pkgs.mkShell {
       steampipe --install-dir "$(git rev-parse --show-toplevel)/.steampipe" query "select * FROM gitlab_project WHERE id = 82145074;" --output json
     '')
     (pkgs.writeShellScriptBin "test-tables" (builtins.readFile ./scripts/test-tables.sh))
+    (pkgs.writeShellScriptBin "publish" (builtins.readFile ./scripts/publish_oci.sh))
     (pkgs.writeShellScriptBin "release" ''
       set -euo pipefail
       if [[ "''${1:-}" == "--bump" ]]; then

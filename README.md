@@ -15,6 +15,12 @@ Install the plugin with [Steampipe](https://steampipe.io/downloads):
 steampipe plugin install theapsgroup/gitlab
 ```
 
+Or install this fork directly from the GitHub Container Registry:
+
+```shell
+steampipe plugin install ghcr.io/jdmacd/steampipe-plugin-gitlab:latest
+```
+
 [Configure the plugin](https://hub.steampipe.io/plugins/theapsgroup/gitlab#configuration) using the configuration file:
 
 ```shell
