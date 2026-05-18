@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.14.1
-	gitlab.com/gitlab-org/api/client-go/v2 v2.25.0
+	gitlab.com/gitlab-org/api/client-go/v2 v2.27.0
 )
 
 require (
