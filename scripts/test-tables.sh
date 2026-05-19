@@ -16,8 +16,8 @@ TEST_GROUP="${GITLAB_TEST_GROUP:-steampipe-gitlab-testing}"
 
 PASS=0; FAIL=0; SKIP=0
 
-ok()   { echo "  PASS  $1"; PASS=$(( PASS + 1 )); }
-fail() { echo "  FAIL  $1  ($2)"; FAIL=$(( FAIL + 1 )); }
+ok()   { echo "  PASS  $1  (${2}ms)"; PASS=$(( PASS + 1 )); }
+fail() { echo "  FAIL  $1  ($2, ${3}ms)"; FAIL=$(( FAIL + 1 )); }
 skip() { echo "  SKIP  $1  ($2)"; SKIP=$(( SKIP + 1 )); }
 
 # Run a steampipe query; succeed on exit 0, fail otherwise.
@@ -25,8 +25,15 @@ skip() { echo "  SKIP  $1  ($2)"; SKIP=$(( SKIP + 1 )); }
 q() { $SP "$1" --output json > /dev/null 2>&1; }
 
 run() {
-    local table="$1" sql="$2"
-    if q "$sql"; then ok "$table"; else fail "$table" "query error"; fi
+    local table="$1" sql="$2" t0 t1 elapsed
+    t0=$(date +%s%3N)
+    if q "$sql"; then
+        t1=$(date +%s%3N)
+        ok "$table" $(( t1 - t0 ))
+    else
+        t1=$(date +%s%3N)
+        fail "$table" "query error" $(( t1 - t0 ))
+    fi
 }
 
 # ---------------------------------------------------------------------------
