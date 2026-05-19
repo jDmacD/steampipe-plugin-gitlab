@@ -290,8 +290,8 @@ schema = 3
     hash = 'sha256-Pc54uTUUxMTROex41VWFYu6pAqUxCDACAuDdMMwiW1g='
 
   [mod.'gitlab.com/gitlab-org/api/client-go/v2']
-    version = 'v2.25.0'
-    hash = 'sha256-rSk4IzYW1GmgEH2Sqk9fu5O8hrLTlh6HlQVpTyz2j2U='
+    version = 'v2.27.0'
+    hash = 'sha256-gNAcNwJ802YV936XsFEk6qhHMo1gIoVg59/OiUPHfAU='
 
   [mod.'go.opencensus.io']
     version = 'v0.24.0'
