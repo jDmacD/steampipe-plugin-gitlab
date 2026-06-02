@@ -65,3 +65,39 @@ from
   gitlab_my_project as p,
   gitlab_merge_request as m
 ```
+
+### List open merge requests that are awaiting approvals
+
+```sql
+select
+  project_id,
+  iid,
+  title,
+  approvals_required,
+  approvals_left,
+  approved
+from
+  gitlab_merge_request
+where
+  project_id = 12345
+  and state = 'opened'
+  and approved = false;
+```
+
+### List open merge requests with their approval status
+
+```sql
+select
+  iid,
+  title,
+  approvals_required,
+  approvals_left,
+  approved
+from
+  gitlab_merge_request
+where
+  project_id = 12345
+  and state = 'opened'
+order by
+  approvals_left desc;
+```

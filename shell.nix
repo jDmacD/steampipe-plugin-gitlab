@@ -47,6 +47,15 @@ pkgs.mkShell {
       export GITHUB_TOKEN=$(gh auth token)
       goreleaser release --clean "$@"
     '')
+    (pkgs.writeShellScriptBin "steampipe-service" ''
+      steampipe \
+        --install-dir "$(git rev-parse --show-toplevel)/.steampipe" \
+        service start \
+         --database-listen network \
+         --database-port 5432 \
+         --foreground \
+         --database-password steampipe 
+    '')
   ];
   shellHook =
   ''

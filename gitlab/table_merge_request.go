@@ -203,6 +203,33 @@ func listAllMergeRequests(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	return nil, nil
 }
 
+func getMergeRequestApprovals(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	conn, err := connect(ctx, d)
+	if err != nil {
+		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+	}
+
+	var projectID int64
+	var iid int64
+	switch mr := h.Item.(type) {
+	case *api.MergeRequest:
+		projectID = mr.ProjectID
+		iid = mr.IID
+	case *api.BasicMergeRequest:
+		projectID = mr.ProjectID
+		iid = mr.IID
+	default:
+		return nil, fmt.Errorf("getMergeRequestApprovals: unexpected item type %T", h.Item)
+	}
+
+	approvals, _, err := conn.MergeRequestApprovals.GetConfiguration(int(projectID), iid)
+	if err != nil {
+		plugin.Logger(ctx).Warn("getMergeRequestApprovals", "project_id", projectID, "iid", iid, "error", err)
+		return nil, nil
+	}
+	return approvals, nil
+}
+
 // Transform Functions
 func parseBasicUserCollection(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	var output []string
@@ -539,8 +566,30 @@ func gitlabMergeRequestColumns() []*plugin.Column {
 		{
 			Name:        "approvals_before_merge",
 			Type:        proto.ColumnType_INT,
+			Description: "The number of approvals required before merge can proceed (deprecated; prefer approvals_required).",
+			Hydrate:     getMergeRequestApprovals,
+			Transform:   transform.FromField("ApprovalsBeforeMerge"),
+		},
+		{
+			Name:        "approvals_required",
+			Type:        proto.ColumnType_INT,
 			Description: "The number of approvals required before merge can proceed.",
-			Transform:   transform.FromGo(),
+			Hydrate:     getMergeRequestApprovals,
+			Transform:   transform.FromField("ApprovalsRequired"),
+		},
+		{
+			Name:        "approvals_left",
+			Type:        proto.ColumnType_INT,
+			Description: "The number of approvals still required before merge can proceed.",
+			Hydrate:     getMergeRequestApprovals,
+			Transform:   transform.FromField("ApprovalsLeft"),
+		},
+		{
+			Name:        "approved",
+			Type:        proto.ColumnType_BOOL,
+			Description: "Indicates if the merge request has received sufficient approvals.",
+			Hydrate:     getMergeRequestApprovals,
+			Transform:   transform.FromField("Approved"),
 		},
 		{
 			Name:        "reference",
